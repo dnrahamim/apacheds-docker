@@ -13,17 +13,16 @@ ENV APACHEDS_ARCHIVE apacheds-${APACHEDS_VERSION}-${APACHEDS_ARCH}.deb
 ENV APACHEDS_DATA /var/lib/apacheds
 ENV APACHEDS_USER apacheds
 ENV APACHEDS_GROUP apacheds
+ENV APACHEDS_BOOTSTRAP /bootstrap
 
 RUN ln -s ${APACHEDS_DATA}-${APACHEDS_VERSION} ${APACHEDS_DATA}
 VOLUME ${APACHEDS_DATA}
 
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections \
-    && apt-get update \
+RUN apt-get update \
     && apt-get install -y \
        apt-utils
 
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections \
-    && apt-get install -y \
+RUN apt-get install -y \
        ca-certificates \
        ldap-utils \
        procps \
@@ -48,9 +47,6 @@ EXPOSE 10389 10636 60088 60464 8080 8443
 # ApacheDS bootstrap configuration
 #############################################
 
-ENV APACHEDS_INSTANCE default
-ENV APACHEDS_BOOTSTRAP /bootstrap
-
 ADD scripts/run.sh /run.sh
 RUN chown ${APACHEDS_USER}:${APACHEDS_GROUP} /run.sh \
     && chmod u+rx /run.sh
@@ -74,7 +70,7 @@ ADD bin/ldapmanager /usr/local/bin/ldapmanager
 #############################################
 
 # Correct for hard-coded INSTANCES_DIRECTORY variable
-RUN sed -i "s#/var/lib/apacheds-${APACHEDS_VERSION}#/var/lib/apacheds#" /opt/apacheds-${APACHEDS_SNAPSHOT}/bin/apacheds
+RUN sed -i "s#${APACHEDS_DATA}-${APACHEDS_VERSION}#${APACHEDS_DATA}#" /opt/apacheds-${APACHEDS_SNAPSHOT}/bin/apacheds
 
 
 RUN curl -L -o /usr/local/bin/dumb-init \
