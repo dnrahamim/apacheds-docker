@@ -31,7 +31,7 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
        curl \
        jq
 
-RUN curl https://dlcdn.apache.org//directory/apacheds/dist/2.0.0.AM27/apacheds-2.0.0.AM27-amd64.deb > ${APACHEDS_ARCHIVE} \
+RUN curl https://dlcdn.apache.org//directory/apacheds/dist/${APACHEDS_VERSION}/apacheds-${APACHEDS_VERSION}-amd64.deb > ${APACHEDS_ARCHIVE} \
     && dpkg -i ${APACHEDS_ARCHIVE} \
     && rm ${APACHEDS_ARCHIVE}
 
